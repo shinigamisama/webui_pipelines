@@ -118,7 +118,9 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                             )
                             + f"Query: {user_message}",
                         },
+                    
                     ],
+                    "stream": False
                     # TODO: dynamically add response_format?
                     # "response_format": {"type": "json_object"},
                 },
@@ -126,7 +128,6 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                     "Authorization": f"Bearer {self.valves.OLLAMA_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                stream=False,
             )
             r.raise_for_status()
 
