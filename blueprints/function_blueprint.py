@@ -1,8 +1,11 @@
-from typing import List, Optional
+from typing import List, Optional, get_type_hints, Literal
 from pydantic import BaseModel
 import os
 import requests
 import json
+import inspect
+import uuid
+import time
 
 
 
@@ -10,9 +13,7 @@ class OpenAIChatMessage(BaseModel):
     role: str
     content: str
 
-def get_last_user_message(body: List[dict]):
-    print(body)
-    messages = body["messages"]
+def get_last_user_message(messages: List[dict]):
     for message in reversed(messages):
         print("Message:", message)
         if message["role"] == "user":
