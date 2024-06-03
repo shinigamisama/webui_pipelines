@@ -72,6 +72,7 @@ And answer according to the language of the user's question.""",
         pass
 
     def get_last_user_message(messages: List[dict]) -> str:
+        print(messages)
         for message in reversed(messages):
             print("Message:", message)
             if message["role"] == "user":
