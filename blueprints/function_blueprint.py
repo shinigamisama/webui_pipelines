@@ -71,7 +71,7 @@ And answer according to the language of the user's question.""",
         print(f"on_shutdown:{__name__}")
         pass
 
-    def get_last_user_message(body: dict):
+    def get_last_user_message(body: List[dict]):
         print(body)
         messages = body["messages"]
         for message in reversed(messages):
