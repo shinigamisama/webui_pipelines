@@ -96,26 +96,26 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
         )
 
         r = None
+        # Costruzione dei messaggi per la richiesta
+        messages = [
+            {
+                "role": "system",
+                "content": fc_system_prompt,
+            },
+            {
+                "role": "user",
+                "content": "History:\n"
+                + "\n".join(
+                    [
+                        f"{message['role']}: {message['content']}"
+                        for message in body["messages"][::-1][:4]
+                    ]
+                )
+                + f"\nQuery: {user_message}",
+            },
+        ]
+        print(messages)
         try:
-            # Costruzione dei messaggi per la richiesta
-            messages = [
-                {
-                    "role": "system",
-                    "content": fc_system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": "History:\n"
-                    + "\n".join(
-                        [
-                            f"{message['role']}: {message['content']}"
-                            for message in body["messages"][::-1][:4]
-                        ]
-                    )
-                    + f"\nQuery: {user_message}",
-                },
-            ]
-            print(messages)
             # Call the OpenAI API to get the function response
             r = requests.post(
                 url=f"{self.valves.OLLAMA_API_BASE_URL}/api/chat",
