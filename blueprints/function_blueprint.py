@@ -24,8 +24,8 @@ class Pipeline:
         priority: int = 0
 
         # Valves for function calling
-        OPENAI_API_BASE_URL: str
-        OPENAI_API_KEY: str
+        OLLAMA_API_BASE_URL: str
+        OLLAMA_API_KEY: str
         TASK_MODEL: str
         TEMPLATE: str
 
