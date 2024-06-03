@@ -74,7 +74,9 @@ And answer according to the language of the user's question.""",
     def get_last_user_message(messages: List[dict]) -> str:
         for message in reversed(messages):
             if message["role"] == "user":
+                print(message)
                 if isinstance(message["content"], list):
+                    print("Is a list")
                     for item in message["content"]:
                         if item["type"] == "text":
                             return item["text"]
