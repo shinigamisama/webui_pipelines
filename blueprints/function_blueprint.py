@@ -73,15 +73,19 @@ And answer according to the language of the user's question.""",
 
     def get_last_user_message(messages: List[dict]) -> str:
         for message in reversed(messages):
+            print("Message:", message)
             if message["role"] == "user":
-                print(message)
                 if isinstance(message["content"], list):
-                    print("Is a list")
+                    print("Content is a list")
                     for item in message["content"]:
+                        print("Item:", item)
                         if item["type"] == "text":
                             return item["text"]
-                return message["content"]
+                else:
+                    print("Content is not a list:", message["content"])
+                    return message["content"]
         return None
+
 
     def add_or_update_system_message(content: str, messages: List[dict]):
         """
