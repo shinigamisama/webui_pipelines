@@ -131,6 +131,9 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
             )
             r.raise_for_status()
 
+            # Print the response text for debugging
+            print("Response Text:", r.text)
+
             response = r.json()
             content = response["message"]["content"]
 
@@ -162,13 +165,19 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                         # Return the updated messages
                         return {**body, "messages": messages}
 
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e} - Response Text: {r.text if r else 'No response'}")
         except Exception as e:
             print(f"Error: {e}")
-
+        
             if r:
                 try:
                     print(r.json())
-                except:
-                    pass
+                except json.JSONDecodeError as e:
+                    print(f"JSON decode error: {e} - Response Text: {r.text}")
+                except Exception as e:
+                    print(f"Failed to decode JSON and encountered an error: {e}")
 
         return body
