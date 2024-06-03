@@ -13,19 +13,14 @@ class OpenAIChatMessage(BaseModel):
     role: str
     content: str
 
-def get_last_user_message(messages: List[dict]):
+def get_last_user_message(messages: List[dict]) -> str:
     for message in reversed(messages):
-        print("Message:", message)
         if message["role"] == "user":
             if isinstance(message["content"], list):
-                print("Content is a list")
                 for item in message["content"]:
-                    print("Item:", item)
                     if item["type"] == "text":
                         return item["text"]
-            else:
-                print("Content is not a list:", message["content"])
-                return message["content"]
+            return message["content"]
     return None
 
 
@@ -178,7 +173,9 @@ And answer according to the language of the user's question.""",
         print(user)
 
         # Get the last user message
-        user_message = get_last_user_message(body)
+        messages = body["messages"]
+        print(messages)
+        user_message = get_last_user_message(messages)
         print(user_message)
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
