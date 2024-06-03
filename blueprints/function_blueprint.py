@@ -174,7 +174,7 @@ And answer according to the language of the user's question.""",
 
         # Get the last user message
         messages = body["messages"]
-        print(messages)
+        print("messages: ", messages)
         user_message = get_last_user_message(messages)
         print(user_message)
         # Get the tools specs
