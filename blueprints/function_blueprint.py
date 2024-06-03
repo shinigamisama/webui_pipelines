@@ -114,7 +114,8 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                 + f"\nQuery: {user_message}",
             },
         ]
-        print(messages)
+        with open("jsondump.json", 'w') as file:
+            json.dump(messages, file, indent=4)
         try:
             # Call the OpenAI API to get the function response
             r = requests.post(
