@@ -166,9 +166,10 @@ And answer according to the language of the user's question.""",
 
         # Get the last user message
         user_message = get_last_user_message(body["messages"])
-
+        print(user_message)
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
+        print(tools_specs)
 
         # System prompt for function calling
         fc_system_prompt = (
