@@ -96,27 +96,32 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
         )
 
         r = None
-        # Costruzione dei messaggi per la richiesta
-        messages = [
-            {
-                "role": "system",
-                "content": fc_system_prompt,
-            },
-            {
-                "role": "user",
-                "content": "History:\n"
-                + "\n".join(
-                    [
-                        f"{message['role']}: {message['content']}"
-                        for message in body["messages"][::-1][:4]
-                    ]
-                )
-                + f"\nQuery: {user_message}",
-            },
-        ]
-        with open("jsondump.json", 'w') as file:
-            json.dump(messages, file, indent=4)
+        
         try:
+            # Costruzione dei messaggi per la richiesta
+            messages = [
+                {
+                    "role": "system",
+                    "content": fc_system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": "History:\n"
+                    + "\n".join(
+                        [
+                            f"{message['role']}: {message['content']}"
+                            for message in body["messages"][::-1][:4]
+                        ]
+                    )
+                    + f"\nQuery: {user_message}",
+                },
+            ]
+            # Stampa dei messaggi per il debug
+            print("Request JSON:", json.dumps({
+                "model": self.valves.TASK_MODEL,
+                "messages": messages,
+                "stream": False
+            }, indent=4))
             # Call the OpenAI API to get the function response
             r = requests.post(
                 url=f"{self.valves.OLLAMA_API_BASE_URL}/api/chat",
