@@ -1,16 +1,14 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from schemas import OpenAIChatMessage
 import os
 import requests
 import json
 
-from utils.pipelines.main import (
-    get_last_user_message,
-    add_or_update_system_message,
-    get_tools_specs,
-)
 
+
+class OpenAIChatMessage(BaseModel):
+    role: str
+    content: str
 
 class Pipeline:
     class Valves(BaseModel):
@@ -73,6 +71,92 @@ And answer according to the language of the user's question.""",
         print(f"on_shutdown:{__name__}")
         pass
 
+    def get_last_user_message(messages: List[dict]) -> str:
+        for message in reversed(messages):
+            if message["role"] == "user":
+                if isinstance(message["content"], list):
+                    for item in message["content"]:
+                        if item["type"] == "text":
+                            return item["text"]
+                return message["content"]
+        return None
+
+    def add_or_update_system_message(content: str, messages: List[dict]):
+        """
+        Adds a new system message at the beginning of the messages list
+        or updates the existing system message at the beginning.
+    
+        :param msg: The message to be added or appended.
+        :param messages: The list of message dictionaries.
+        :return: The updated list of message dictionaries.
+        """
+    
+        if messages and messages[0].get("role") == "system":
+            messages[0]["content"] += f"{content}\n{messages[0]['content']}"
+        else:
+            # Insert at the beginning
+            messages.insert(0, {"role": "system", "content": content})
+    
+        return messages
+
+
+    def get_tools_specs(tools) -> List[dict]:
+        function_list = [
+            {"name": func, "function": getattr(tools, func)}
+            for func in dir(tools)
+            if callable(getattr(tools, func)) and not func.startswith("__")
+        ]
+    
+        specs = []
+    
+        for function_item in function_list:
+            function_name = function_item["name"]
+            function = function_item["function"]
+    
+            function_doc = doc_to_dict(function.__doc__ or function_name)
+            specs.append(
+                {
+                    "name": function_name,
+                    # TODO: multi-line desc?
+                    "description": function_doc.get("description", function_name),
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            param_name: {
+                                "type": param_annotation.__name__.lower(),
+                                **(
+                                    {
+                                        "enum": (
+                                            param_annotation.__args__
+                                            if hasattr(param_annotation, "__args__")
+                                            else None
+                                        )
+                                    }
+                                    if hasattr(param_annotation, "__args__")
+                                    else {}
+                                ),
+                                "description": function_doc.get("params", {}).get(
+                                    param_name, param_name
+                                ),
+                            }
+                            for param_name, param_annotation in get_type_hints(
+                                function
+                            ).items()
+                            if param_name != "return"
+                        },
+                        "required": [
+                            name
+                            for name, param in inspect.signature(
+                                function
+                            ).parameters.items()
+                            if param.default is param.empty
+                        ],
+                    },
+                }
+            )
+    
+        return specs
+    
     async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
         # If title generation is requested, skip the function calling filter
         if body.get("title", False):
