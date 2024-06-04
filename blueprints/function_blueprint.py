@@ -13,6 +13,22 @@ class OpenAIChatMessage(BaseModel):
     role: str
     content: str
 
+def stream_message_template(model: str, message: str):
+    return {
+        "id": f"{model}-{str(uuid.uuid4())}",
+        "object": "chat.completion.chunk",
+        "created": int(time.time()),
+        "model": model,
+        "choices": [
+            {
+                "index": 0,
+                "delta": {"content": message},
+                "logprobs": None,
+                "finish_reason": None,
+            }
+        ],
+    }
+
 def get_last_user_message(messages: List[dict]) -> str:
     for message in reversed(messages):
         if message["role"] == "user":
@@ -23,6 +39,15 @@ def get_last_user_message(messages: List[dict]) -> str:
             return message["content"]
     return None
 
+def get_last_assistant_message(messages: List[dict]) -> str:
+    for message in reversed(messages):
+        if message["role"] == "assistant":
+            if isinstance(message["content"], list):
+                for item in message["content"]:
+                    if item["type"] == "text":
+                        return item["text"]
+            return message["content"]
+    return None
 
 def add_or_update_system_message(content: str, messages: List[dict]):
     """
@@ -42,7 +67,19 @@ def add_or_update_system_message(content: str, messages: List[dict]):
 
     return messages
 
+def doc_to_dict(docstring):
+    lines = docstring.split("\n")
+    description = lines[1].strip()
+    param_dict = {}
 
+    for line in lines:
+        if ":param" in line:
+            line = line.replace(":param", "").strip()
+            param, desc = line.split(":", 1)
+            param_dict[param.strip()] = desc.strip()
+    ret_dict = {"description": description, "params": param_dict}
+    return ret_dict
+    
 def get_tools_specs(tools) -> List[dict]:
     function_list = [
         {"name": func, "function": getattr(tools, func)}
