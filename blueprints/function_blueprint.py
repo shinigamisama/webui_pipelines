@@ -207,6 +207,7 @@ And answer according to the language of the user's question.""",
         if body.get("title", False):
             return body
         print(f"This is the body: {body}")
+        print(f"Those are the messages: {body['messages']}")
         print(f"pipe: {__name__}")
         print("User Information:", user)
         
