@@ -228,7 +228,7 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
         try:
             # Call the OpenAI API to get the function response
             r = requests.post(
-                url=f"{self.valves.OPENAI_API_BASE_URL}/chat/completions",
+                url=f"{self.valves.OLLAMA_API_BASE_URL}/ollama/chat",
                 json={
                     "model": self.valves.TASK_MODEL,
                     "messages": [
@@ -252,7 +252,7 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                     # "response_format": {"type": "json_object"},
                 },
                 headers={
-                    "Authorization": f"Bearer {self.valves.OPENAI_API_KEY}",
+                    "Authorization": f"Bearer {self.valves.OLLAMA_API_KEY}",
                     "Content-Type": "application/json",
                 },
                 stream=False,
