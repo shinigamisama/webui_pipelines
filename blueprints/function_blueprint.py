@@ -216,7 +216,9 @@ And answer according to the language of the user's question.""",
         user_message = get_last_user_message(body["messages"])
         print("Last user message is:", user_message)
         # Get the tools specs
+        print("Going to get the tools specs...")
         tools_specs = get_tools_specs(self.tools)
+        print("Tools specs are:", tools_specs)
 
         # System prompt for function calling
         fc_system_prompt = (
