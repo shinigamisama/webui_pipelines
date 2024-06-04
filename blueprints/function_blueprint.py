@@ -212,8 +212,9 @@ And answer according to the language of the user's question.""",
         print("User Information:", user)
         
         # Get the last user message
+        print("Going to get the last user message...")
         user_message = get_last_user_message(body["messages"])
-
+        print("Last user message is:", user_message)
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
 
