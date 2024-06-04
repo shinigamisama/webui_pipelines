@@ -172,7 +172,7 @@ And answer according to the language of the user's question.""",
 
         print(f"pipe: {__name__}")
         print("User Information:", user)
-        messages = ['messages']
+        messages = content['messages']
         # Get the last user message
         messages_with_roles_dict = {f"Message{index+1}_{message['role']}": message for index, message in enumerate(messages)}
         print("Messages with Roles as Dictionary:", messages_with_roles_dict)
