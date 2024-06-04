@@ -171,10 +171,11 @@ And answer according to the language of the user's question.""",
 
         print(f"pipe:{__name__}")
         print(user)
-
+        messages = []
         # Get the last user message
-        messages = body["messages"]
-        print("messages: ", messages)
+        for message in body['messages']:
+            messages.append(message)
+            print(message)
         user_message = get_last_user_message(messages)
         print(user_message)
         # Get the tools specs
