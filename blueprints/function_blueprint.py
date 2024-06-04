@@ -167,14 +167,15 @@ And answer according to the language of the user's question.""",
     
     async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
         # If title generation is requested, skip the function calling filter
-        print(body)
+        content = body
+        print(content)
 
         print(f"pipe:{__name__}")
         print(user)
         messages = []
         # Get the last user message
-        for message in body['messages']:
-            messages.append(message)
+        for message in content['messages']:
+            messages.append(message['content'])
             print(message)
         user_message = get_last_user_message(messages)
         print(user_message)
