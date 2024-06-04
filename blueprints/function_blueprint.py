@@ -271,7 +271,7 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
             )
             r.raise_for_status()
             response = r.json()
-            content = response["choices"][0]["message"]["content"]
+            content = response["message"]["content"]
 
             # Parse the function response
             if content != "":
