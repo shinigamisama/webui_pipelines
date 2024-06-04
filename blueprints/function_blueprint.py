@@ -206,7 +206,7 @@ And answer according to the language of the user's question.""",
         # If title generation is requested, skip the function calling filter
         if body.get("title", False):
             return body
-
+        print(f"This is the body: {body}")
         print(f"pipe: {__name__}")
         print("User Information:", user)
         
