@@ -175,9 +175,8 @@ And answer according to the language of the user's question.""",
         messages = []
         # Get the last user message
         for message in content['messages']:
-            messages.append(message['content'])
-            print(message)
-        user_message = get_last_user_message(messages)
+            print(message)  # This will print the contents of each dictionary in the messages list
+        user_message = get_last_user_message(content['messages'])
         print(user_message)
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
