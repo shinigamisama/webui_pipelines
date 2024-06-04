@@ -231,39 +231,45 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
         print("system Prompt seeted as follow: ", fc_system_prompt)
         r = None
         try:
+            # Costruzione dei messaggi per la richiesta
+            messages = [
+                {
+                    "role": "system",
+                    "content": fc_system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": "History:\n"
+                    + "\n".join(
+                        [
+                            f"{message['role']}: {message['content']}"
+                            for message in body["messages"][::-1][:4]
+                        ]
+                    )
+                    + f"\nQuery: {user_message}",
+                },
+            ]
+            # Stampa dei messaggi per il debug
+            print("Request JSON:", json.dumps({
+                "model": self.valves.TASK_MODEL,
+                "messages": messages,
+                "stream": False
+            }, indent=4))
             # Call the OpenAI API to get the function response
+            print("making the post request to llm...")
             r = requests.post(
                 url=f"{self.valves.OLLAMA_API_BASE_URL}/api/chat",
                 json={
                     "model": self.valves.TASK_MODEL,
-                    "messages": [
-                        {
-                            "role": "system",
-                            "content": fc_system_prompt,
-                        },
-                        {
-                            "role": "user",
-                            "content": "History:\n"
-                            + "\n".join(
-                                [
-                                    f"{message['role']}: {message['content']}"
-                                    for message in body["messages"][::-1][:4]
-                                ]
-                            )
-                            + f"Query: {user_message}",
-                        },
-                    ],
-                    # TODO: dynamically add response_format?
-                    # "response_format": {"type": "json_object"},
+                    "messages": messages,
+                    "stream": False
                 },
                 headers={
                     "Authorization": f"Bearer {self.valves.OLLAMA_API_KEY}",
                     "Content-Type": "application/json",
                 },
-                stream=False,
             )
             r.raise_for_status()
-
             response = r.json()
             content = response["choices"][0]["message"]["content"]
 
