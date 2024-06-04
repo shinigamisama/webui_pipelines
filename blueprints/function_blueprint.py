@@ -168,10 +168,10 @@ And answer according to the language of the user's question.""",
     async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
         # If title generation is requested, skip the function calling filter
         content = body
-        print(content)
+        print(f"This is the body: '{content}'")
 
-        print(f"pipe:{__name__}")
-        print(user)
+        print(f"pipe: {__name__}")
+        print("User Information:", user)
         messages = ['messages']
         # Get the last user message
         messages_with_roles_dict = {f"Message{index+1}_{message['role']}": message for index, message in enumerate(messages)}
