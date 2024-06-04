@@ -172,15 +172,12 @@ And answer according to the language of the user's question.""",
 
         print(f"pipe: {__name__}")
         print("User Information:", user)
-        messages = content['messages']
+        
         # Get the last user message
-        messages_with_roles_dict = {f"Message{index+1}_{message['role']}": message for index, message in enumerate(messages)}
-        print("Messages with Roles as Dictionary:", messages_with_roles_dict)
-        user_message = get_last_user_message(messages_with_roles_dict)
-        print(user_message)
+        user_message = get_last_user_message(body["messages"])
+
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
-        print(tools_specs)
 
         # System prompt for function calling
         fc_system_prompt = (
@@ -191,52 +188,42 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
         )
 
         r = None
-        
         try:
-            # Costruzione dei messaggi per la richiesta
-            messages = [
-                {
-                    "role": "system",
-                    "content": fc_system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": "History:\n"
-                    + "\n".join(
-                        [
-                            f"{message['role']}: {message['content']}"
-                            for message in body["messages"][::-1][:4]
-                        ]
-                    )
-                    + f"\nQuery: {user_message}",
-                },
-            ]
-            # Stampa dei messaggi per il debug
-            print("Request JSON:", json.dumps({
-                "model": self.valves.TASK_MODEL,
-                "messages": messages,
-                "stream": False
-            }, indent=4))
             # Call the OpenAI API to get the function response
             r = requests.post(
-                url=f"{self.valves.OLLAMA_API_BASE_URL}/api/chat",
+                url=f"{self.valves.OPENAI_API_BASE_URL}/chat/completions",
                 json={
                     "model": self.valves.TASK_MODEL,
-                    "messages": messages,
-                    "stream": False
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": fc_system_prompt,
+                        },
+                        {
+                            "role": "user",
+                            "content": "History:\n"
+                            + "\n".join(
+                                [
+                                    f"{message['role']}: {message['content']}"
+                                    for message in body["messages"][::-1][:4]
+                                ]
+                            )
+                            + f"Query: {user_message}",
+                        },
+                    ],
+                    # TODO: dynamically add response_format?
+                    # "response_format": {"type": "json_object"},
                 },
                 headers={
-                    "Authorization": f"Bearer {self.valves.OLLAMA_API_KEY}",
+                    "Authorization": f"Bearer {self.valves.OPENAI_API_KEY}",
                     "Content-Type": "application/json",
                 },
+                stream=False,
             )
             r.raise_for_status()
 
-            # Print the response text for debugging
-            print("Response Text:", r.text)
-
             response = r.json()
-            content = response["message"]["content"]
+            content = response["choices"][0]["message"]["content"]
 
             # Parse the function response
             if content != "":
@@ -266,19 +253,13 @@ If a function tool doesn't match the query, return an empty string. Else, pick a
                         # Return the updated messages
                         return {**body, "messages": messages}
 
-        except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
-        except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e} - Response Text: {r.text if r else 'No response'}")
         except Exception as e:
             print(f"Error: {e}")
-        
+
             if r:
                 try:
                     print(r.json())
-                except json.JSONDecodeError as e:
-                    print(f"JSON decode error: {e} - Response Text: {r.text}")
-                except Exception as e:
-                    print(f"Failed to decode JSON and encountered an error: {e}")
+                except:
+                    pass
 
         return body
