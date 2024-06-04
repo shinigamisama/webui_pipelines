@@ -167,8 +167,8 @@ And answer according to the language of the user's question.""",
     
     async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
         # If title generation is requested, skip the function calling filter
-        content = body
-        print(f"This is the body: '{content}'")
+        if body.get("title", False):
+            return body
 
         print(f"pipe: {__name__}")
         print("User Information:", user)
