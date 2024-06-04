@@ -172,11 +172,11 @@ And answer according to the language of the user's question.""",
 
         print(f"pipe:{__name__}")
         print(user)
-        messages = []
+        messages = ['messages']
         # Get the last user message
-        for message in content['messages']:
-            print(message)  # This will print the contents of each dictionary in the messages list
-        user_message = get_last_user_message(content['messages'])
+        messages_with_roles_dict = {f"Message{index+1}_{message['role']}": message for index, message in enumerate(messages)}
+        print("Messages with Roles as Dictionary:", messages_with_roles_dict)
+        user_message = get_last_user_message(messages_with_roles_dict)
         print(user_message)
         # Get the tools specs
         tools_specs = get_tools_specs(self.tools)
