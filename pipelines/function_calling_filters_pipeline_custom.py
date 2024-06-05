@@ -40,7 +40,7 @@ class Pipeline(FunctionCallingBlueprint):
             """
 
             now = datetime.now()
-            current_date = now.strftime("%Y-%m-%d")
+            current_date = now.strftime("%A, %B %d, %Y")
             return f"Current Date = {current_date}"
 
         def get_current_weather(
