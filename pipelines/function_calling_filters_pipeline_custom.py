@@ -23,30 +23,7 @@ def web_scraper(url):
     sentences = sent_tokenize(formatted_text)
     return sentences
 
-def format_search_question(query):
-    now = datetime.today()
-    formatted_now = now.strftime("%Y-%m-%d")
-    api_key = os.getenv('AI_API_Key')
-    URL = os.getenv('AI_URL')
-    URL = URL + "/generate"
-    payload = {
-        "model": os.getenv('AI_MODEL'),  # You can adjust this value to control the response tone (0-9)
-        "prompt": f"You have this question from user: '{query}'. Rephrase the question for a better web search using a MAXIMUM of 5 words, do not use more than 5 words. Reply only with the rephrased question.",
-        "stream": False
-    }
-    # Set the API key in the request headers
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    # Make the POST request to the OLLAMA API
-    response = requests.post(URL, json=payload, headers=headers)
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Get the response text from the API
-        response_text = response.json()["response"]
-        # Send the response back to the user
-        return response_text
+
 
 class Pipeline(FunctionCallingBlueprint):
     class Valves(FunctionCallingBlueprint.Valves):
@@ -125,7 +102,7 @@ class Pipeline(FunctionCallingBlueprint):
         def bravesearch(
                 self,
                 query: str,
-        ) -> str:
+        ):
             """
             Perform a web search with Brave search and scrape the websites founded in the search.
 
@@ -159,10 +136,8 @@ class Pipeline(FunctionCallingBlueprint):
                     check = True
                     while check:
                         print("Wrong format in the response, retry the query")
-                        regen_query = format_search_question(query)
-                        print(regen_query)
                         params_new = {
-                            "q": regen_query,
+                            "q": query,
                             "Accept": "application/json"
                         }
                         response = requests.get(url, params=params_new, headers=headers, stream=True)
