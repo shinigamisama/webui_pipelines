@@ -102,12 +102,12 @@ class Pipeline(FunctionCallingBlueprint):
         def bravesearch(
                 self,
                 query: str,
-        ):
+        ) -> list:
             """
             Perform a web search with Brave search and scrape the websites founded in the search.
 
             :param query: the user question.
-            :return: Web search results.
+            :return: a list of Web search results.
             """
             if self.pipeline.valves.BRAVE_API_KEY == "":
                 return "OpenWeatherMap API Key not set, ask the user to set it up."
