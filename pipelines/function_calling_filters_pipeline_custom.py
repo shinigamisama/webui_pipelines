@@ -1,7 +1,7 @@
 import os
 import requests
 from typing import Literal, List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -136,7 +136,7 @@ class Pipeline(FunctionCallingBlueprint):
                 return "OpenWeatherMap API Key not set, ask the user to set it up."
             else:
                 current_date = datetime.today()
-                month_ago = current_date - datetime.timedelta(days=60)
+                month_ago = current_date - timedelta(days=60)
                 api_key = self.pipeline.valves.BRAVE_API_KEY
                 url = 'https://api.search.brave.com/res/v1/web/search'
                 # Set query parameters
