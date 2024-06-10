@@ -24,7 +24,7 @@ def web_scraper(url):
     return sentences
 
 def format_search_question(query):
-    now = datetime.datetime.today()
+    now = datetime.today()
     formatted_now = now.strftime("%Y-%m-%d")
     api_key = os.getenv('AI_API_Key')
     URL = os.getenv('AI_URL')
@@ -174,7 +174,7 @@ class Pipeline(FunctionCallingBlueprint):
                             print(f"Error: {e}")
                 href_values = []
                 for result in results:
-                    if "url" in result and "page_age" in result and datetime.datetime.strptime(result["page_age"], "%Y-%m-%dT%H:%M:%S").date() > month_ago:
+                    if "url" in result and "page_age" in result and datetime.strptime(result["page_age"], "%Y-%m-%dT%H:%M:%S").date() > month_ago:
                         href_values.append(result["url"])
 
                 contents = []
