@@ -102,7 +102,7 @@ class Pipeline(FunctionCallingBlueprint):
         def bravesearch(
                 self,
                 query: str,
-        ) -> list:
+        ) -> str:
             """
             Perform a web search with Brave search and scrape the websites founded in the search.
 
@@ -161,8 +161,10 @@ class Pipeline(FunctionCallingBlueprint):
                         contents = web_scraper(href)
                     except Exception as e:
                         print (f"connection error: {e}")
-
-                return contents
+                output = ""
+                for content in contents:
+                    output += content +''
+                return output
 
     def __init__(self):
         super().__init__()
