@@ -135,7 +135,7 @@ class Pipeline(FunctionCallingBlueprint):
             if self.pipeline.valves.BRAVE_API_KEY == "":
                 return "OpenWeatherMap API Key not set, ask the user to set it up."
             else:
-                current_date = datetime.date.today()
+                current_date = datetime.today()
                 month_ago = current_date - datetime.timedelta(days=60)
                 api_key = self.pipeline.valves.BRAVE_API_KEY
                 url = 'https://api.search.brave.com/res/v1/web/search'
