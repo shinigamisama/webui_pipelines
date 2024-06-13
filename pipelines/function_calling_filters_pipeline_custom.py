@@ -36,69 +36,6 @@ class Pipeline(FunctionCallingBlueprint):
         def __init__(self, pipeline) -> None:
             self.pipeline = pipeline
 
-        def get_current_time(
-            self,
-        ) -> str:
-            """
-            Get the current time.
-
-            :return: The current time.
-            """
-
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            return f"Current Time = {current_time}"
-
-        def get_current_date(
-            self,
-        ) -> str:
-            """
-            Get the current date.
-
-            :return: The current date.
-            """
-
-            now = datetime.now()
-            current_date = now.strftime("%A, %B %d, %Y")
-            return f"Current Date = {current_date}"
-
-        def get_current_weather(
-            self,
-            location: str,
-            unit: Literal["metric", "fahrenheit"] = "fahrenheit",
-        ) -> str:
-            """
-            Get the current weather for a location. If the location is not found, return an empty string.
-
-            :param location: The location to get the weather for.
-            :param unit: The unit to get the weather in. Default is fahrenheit.
-            :return: The current weather for the location.
-            """
-
-            # https://openweathermap.org/api
-
-            if self.pipeline.valves.OPENWEATHERMAP_API_KEY == "":
-                return "OpenWeatherMap API Key not set, ask the user to set it up."
-            else:
-                units = "imperial" if unit == "fahrenheit" else "metric"
-                params = {
-                    "q": location,
-                    "appid": self.pipeline.valves.OPENWEATHERMAP_API_KEY,
-                    "units": units,
-                }
-
-                response = requests.get(
-                    "http://api.openweathermap.org/data/2.5/weather", params=params
-                )
-                response.raise_for_status()  # Raises an HTTPError for bad responses
-                data = response.json()
-
-                weather_description = data["weather"][0]["description"]
-                temperature = data["main"]["temp"]
-
-                return f"{location}: {weather_description.capitalize()}, {temperature}°{unit.capitalize()[0]}"
-
-
         def bravesearch(
                 self,
                 query: str,
@@ -158,7 +95,9 @@ class Pipeline(FunctionCallingBlueprint):
                 for href in href_values:
                     print("Scanning: ",href)
                     try:
-                        contents = web_scraper(href)
+                        contents_1 = web_scraper(href)
+                        if "data null" not in contents_1:
+                            contents = contents_1
                     except Exception as e:
                         print (f"connection error: {e}")
                 output = ""
@@ -178,7 +117,6 @@ class Pipeline(FunctionCallingBlueprint):
             **{
                 **self.valves.model_dump(),
                 "pipelines": ["*"],  # Connect to all pipelines
-                "OPENWEATHERMAP_API_KEY": os.getenv("OPENWEATHERMAP_API_KEY", ""),
                 "BRAVE_API_KEY": os.getenv("BRAVE_API_KEY", ""),
             },
         )
